@@ -15,6 +15,7 @@
 		1348EF04218BAEAF000802B4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1348EF02218BAEAF000802B4 /* Main.storyboard */; };
 		1348EF06218BAEB1000802B4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1348EF05218BAEB1000802B4 /* Assets.xcassets */; };
 		1348EF09218BAEB1000802B4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1348EF07218BAEB1000802B4 /* LaunchScreen.storyboard */; };
+		C10AFA50218CC5AF00331D97 /* gameViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10AFA4F218CC5AF00331D97 /* gameViewControllerDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		1348EF05218BAEB1000802B4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		1348EF08218BAEB1000802B4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1348EF0A218BAEB1000802B4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C10AFA4F218CC5AF00331D97 /* gameViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = gameViewControllerDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +66,7 @@
 				1348EEFA218BAEAF000802B4 /* GameScene.sks */,
 				1348EEFC218BAEAF000802B4 /* Actions.sks */,
 				1348EEFE218BAEAF000802B4 /* GameScene.swift */,
+				C10AFA4F218CC5AF00331D97 /* gameViewControllerDelegate.swift */,
 				1348EF00218BAEAF000802B4 /* GameViewController.swift */,
 				1348EF02218BAEAF000802B4 /* Main.storyboard */,
 				1348EF05218BAEB1000802B4 /* Assets.xcassets */,
@@ -148,6 +151,7 @@
 			files = (
 				1348EEFF218BAEAF000802B4 /* GameScene.swift in Sources */,
 				1348EF01218BAEAF000802B4 /* GameViewController.swift in Sources */,
+				C10AFA50218CC5AF00331D97 /* gameViewControllerDelegate.swift in Sources */,
 				1348EEF9218BAEAF000802B4 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

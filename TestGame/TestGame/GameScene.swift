@@ -25,17 +25,19 @@ extension GameScene: SKPhysicsContactDelegate {
         
         // 2
         if ((firstBody.categoryBitMask & PhysicsCategory.rock != 0) &&
-            (secondBody.categoryBitMask & PhysicsCategory.pillar != 0)) {
-            if let pillar = firstBody.node as? SKSpriteNode,
+            (secondBody.categoryBitMask & PhysicsCategory.gold != 0)) {
+            if let gold = firstBody.node as? SKSpriteNode,
                 let rock = secondBody.node as? SKSpriteNode {
-                rockDidCollideWithPillar(rock: rock, pillar: pillar)
+                rockDidCollideWithPillar(rock: rock, pillar: gold)
             }
         }
     }
 }
 
 class GameScene: SKScene {
+    weak var gameViewControllerDelegate:GameViewControllerDelegate?
     var gameStarted:Bool = false
+    var hitGold:Bool = false
     
     var entities = [GKEntity]()
     var graphs = [String : GKGraph]()
@@ -62,28 +64,46 @@ class GameScene: SKScene {
     
     deinit {print("gamescene deinitied")}
     
-    func initRock(to view: SKView) {
-        rock.position = CGPoint(x: -view.bounds.width/2+450, y: view.bounds.height/2+70)
+    func initRock(to view: SKView, addRock:Bool?) {
+        physicsWorld.gravity = CGVector(dx:0, dy: 0)
+        rock.position = CGPoint(x: -view.bounds.width/2+400, y: view.bounds.height/2+70)
+        rock.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
+        rock.physicsBody?.isDynamic = true
+        rock.physicsBody?.affectedByGravity = true
+        rock.physicsBody?.categoryBitMask = PhysicsCategory.rock
+        rock.physicsBody?.contactTestBitMask = PhysicsCategory.gold
+        rock.physicsBody?.collisionBitMask = PhysicsCategory.none
+        rock.physicsBody?.usesPreciseCollisionDetection = true
+
+        if let add = addRock {
+            if add {
+                print("Drawing Rock")
+                background!.addChild(rock)
+                background!.addChild(gold)
+            }
+        }
     }
     
     func initBackground(to view: SKView) {
         let txt = SKTexture(imageNamed: "background")
         background = SKSpriteNode(texture: txt, size:size)
         background!.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        background?.zPosition = 0.0
         self.addChild(background!)
     }
     
     override func didMove(to view: SKView) {
         physicsWorld.gravity = CGVector(dx:0, dy: 0)
         
-	initBackground(to:view)
+        initBackground(to:view)
         
-        rock.position = CGPoint(x: -view.bounds.width/2+70, y: view.bounds.height/2+70)
+        rock.zPosition = 0.5
+        rock.position = CGPoint(x: -view.bounds.width/2+200, y: view.bounds.height/2+100)
         rock.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
         rock.physicsBody?.isDynamic = true
         rock.physicsBody?.affectedByGravity = true
         rock.physicsBody?.categoryBitMask = PhysicsCategory.rock
-        rock.physicsBody?.contactTestBitMask = PhysicsCategory.pillar
+        rock.physicsBody?.contactTestBitMask = PhysicsCategory.gold
         rock.physicsBody?.collisionBitMask = PhysicsCategory.none
         rock.physicsBody?.usesPreciseCollisionDetection = true
 
@@ -99,7 +119,8 @@ class GameScene: SKScene {
 //
 //        background!.addChild(pillar)
 
-        gold.position = CGPoint(x: 0, y: 0)
+        gold.zPosition = 0.6
+        gold.position = CGPoint(x: -view.bounds.width/2+50, y: view.bounds.height/2-920)
         gold.physicsBody = SKPhysicsBody(rectangleOf: gold.size)
         gold.physicsBody?.isDynamic = true
         gold.physicsBody?.affectedByGravity = false
@@ -124,6 +145,9 @@ class GameScene: SKScene {
         print("Hit")
         rock.removeFromParent()
         pillar.removeFromParent()
+        gameViewControllerDelegate?.callMethod(control:"Stop", addRock:nil)
+        hitGold = true
+
     }
     
     override func sceneDidLoad() {
@@ -160,6 +184,12 @@ class GameScene: SKScene {
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else {
+            return
+        }
+        
+        gameViewControllerDelegate?.callMethod(control:"Start", addRock:hitGold)
+        hitGold = false
         for t in touches { self.touchDown(atPoint: t.location(in: self)) }
     }
     
