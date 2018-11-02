@@ -50,6 +50,9 @@ class GameScene: SKScene {
     let rock = SKSpriteNode(imageNamed: "rock")
     var pillar = SKSpriteNode(imageNamed: "pillar")
     let gold = SKSpriteNode(imageNamed: "gold")
+    let cage1 = SKSpriteNode(imageNamed: "cage1")
+    let cage2 = SKSpriteNode(imageNamed: "cage4")
+    let lep = SKSpriteNode(imageNamed: "leprechaun")
     var background:SKSpriteNode?
     
     var ground:UIView?
@@ -59,14 +62,16 @@ class GameScene: SKScene {
         static let all       : UInt32 = UInt32.max
         static let rock   : UInt32 = 0b1       // 1
         static let pillar: UInt32 = 0b10      // 2
-        static let gold: UInt32 = 0b100      // 3
+        static let gold: UInt32 = 0b11      // 3
+        static let cage: UInt32 = 0b100      // 3
+
     }
     
     deinit {print("gamescene deinitied")}
     
     func initRock(to view: SKView, addRock:Bool?) {
         physicsWorld.gravity = CGVector(dx:0, dy: 0)
-        rock.position = CGPoint(x: -view.bounds.width/2+400, y: view.bounds.height/2+70)
+        rock.position = CGPoint(x: -view.bounds.width/2+400, y: view.bounds.height/2+200)
         rock.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
         rock.physicsBody?.isDynamic = true
         rock.physicsBody?.affectedByGravity = true
@@ -98,7 +103,7 @@ class GameScene: SKScene {
         initBackground(to:view)
         
         rock.zPosition = 0.5
-        rock.position = CGPoint(x: -view.bounds.width/2+200, y: view.bounds.height/2+100)
+        rock.position = CGPoint(x: -view.bounds.width/2+200, y: view.bounds.height/2+200)
         rock.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
         rock.physicsBody?.isDynamic = true
         rock.physicsBody?.affectedByGravity = true
@@ -108,16 +113,11 @@ class GameScene: SKScene {
         rock.physicsBody?.usesPreciseCollisionDetection = true
 
         background!.addChild(rock)
+
+        lep.zPosition = 0.3
+        lep.position = CGPoint(x: -view.bounds.width/2+480, y: view.bounds.height/2+200)
         
-//        pillar.position = CGPoint(x: -view.bounds.width/2+40, y: -view.bounds.height/2)
-//        pillar.physicsBody = SKPhysicsBody(rectangleOf: pillar.size)
-//        pillar.physicsBody?.isDynamic = true
-//        pillar.physicsBody?.affectedByGravity = false
-//        pillar.physicsBody?.categoryBitMask = PhysicsCategory.pillar
-//        pillar.physicsBody?.contactTestBitMask = PhysicsCategory.rock
-//        pillar.physicsBody?.collisionBitMask = PhysicsCategory.none
-//
-//        background!.addChild(pillar)
+        background!.addChild(lep)
 
         gold.zPosition = 0.6
         gold.position = CGPoint(x: -view.bounds.width/2+50, y: view.bounds.height/2-920)
@@ -130,8 +130,28 @@ class GameScene: SKScene {
         
         background!.addChild(gold)
 
+        cage1.zPosition = 0.7
+        cage1.position = CGPoint(x: -view.bounds.width/2+5, y: view.bounds.height/2-920)
+        cage1.physicsBody = SKPhysicsBody(rectangleOf: cage1.size)
+        cage1.physicsBody?.isDynamic = true
+        cage1.physicsBody?.affectedByGravity = false
+        cage1.physicsBody?.categoryBitMask = PhysicsCategory.cage
+        cage1.physicsBody?.contactTestBitMask = PhysicsCategory.rock
+        cage1.physicsBody?.collisionBitMask = PhysicsCategory.none
         
+        background!.addChild(cage1)
+
+        cage2.zPosition = 0.7
+        cage2.position = CGPoint(x: -view.bounds.width/2+90, y: view.bounds.height/2-920)
+        cage2.physicsBody = SKPhysicsBody(rectangleOf: cage2.size)
+        cage2.physicsBody?.isDynamic = true
+        cage2.physicsBody?.affectedByGravity = false
+        cage2.physicsBody?.categoryBitMask = PhysicsCategory.cage
+        cage2.physicsBody?.contactTestBitMask = PhysicsCategory.rock
+        cage2.physicsBody?.collisionBitMask = PhysicsCategory.none
         
+        background!.addChild(cage2)
+
         physicsWorld.contactDelegate = self
         
 //        let groundFrame = CGRect(x: 0, y: view.bounds.height-50, width: view.bounds.width, height: 50)
