@@ -39,7 +39,7 @@ class GameViewController: UIViewController {
         if let scene = GKScene(fileNamed: "GameScene") {
             
             // Get the SKScene from the loaded GKScene
-            if let sceneNode = scene.rootNode as! GameScene? {
+            if var sceneNode = scene.rootNode as! GameScene? {
                 
                 // Copy gameplay related content over to the scene
                 sceneNode.entities = scene.entities
@@ -83,7 +83,10 @@ class GameViewController: UIViewController {
                                         } else {
                                             // reinit game
                                             rocks -= 1
-                                            
+
+                                            // need to redraw the scene
+                                            self.gameStarted = false
+                                            sceneNode.gameStarted = false
                                         }
                                     }
                                     if let last = self.lastAttitude {

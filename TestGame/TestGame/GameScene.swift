@@ -57,12 +57,12 @@ class GameScene: SKScene {
 //        static let ground: UInt32 = 0b100      // 3
     }
     
-    //deinit {print("gamescene deinitied")}
+    deinit {print("gamescene deinitied")}
     
     override func didMove(to view: SKView) {
         physicsWorld.gravity = CGVector(dx:0, dy: 0)
 
-        rock.position = CGPoint(x: -view.bounds.width/2+70, y: view.bounds.height/2+50)
+        rock.position = CGPoint(x: -view.bounds.width/2+70, y: view.bounds.height/2+70)
         rock.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
         rock.physicsBody?.isDynamic = true
         rock.physicsBody?.affectedByGravity = true
@@ -73,7 +73,7 @@ class GameScene: SKScene {
         
         addChild(rock)
         
-        pillar.position = CGPoint(x: -view.bounds.width/2+70, y: -view.bounds.height/2)
+        pillar.position = CGPoint(x: -view.bounds.width/2+40, y: -view.bounds.height/2)
         pillar.physicsBody = SKPhysicsBody(rectangleOf: pillar.size)
         pillar.physicsBody?.isDynamic = true
         pillar.physicsBody?.affectedByGravity = false
