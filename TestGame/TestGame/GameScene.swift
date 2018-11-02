@@ -24,13 +24,35 @@ extension GameScene: SKPhysicsContactDelegate {
         }
         
         // 2
-        if ((firstBody.categoryBitMask & PhysicsCategory.rock != 0) &&
-            (secondBody.categoryBitMask & PhysicsCategory.gold != 0)) {
-            if let gold = firstBody.node as? SKSpriteNode,
-                let rock = secondBody.node as? SKSpriteNode {
-                rockDidCollideWithPillar(rock: rock, pillar: gold)
+        if ((firstBody.categoryBitMask == PhysicsCategory.rock) &&
+            (secondBody.categoryBitMask == PhysicsCategory.cage1)) {
+            if let obj1 = firstBody.node as? SKSpriteNode,
+                let obj2 = secondBody.node as? SKSpriteNode {
+                cagesDestroyed += 1
+                rockDidCollideWithObject(rock: obj1, object: obj2)
             }
         }
+
+        if ((firstBody.categoryBitMask == PhysicsCategory.rock) &&
+            (secondBody.categoryBitMask == PhysicsCategory.cage2)) {
+            if let obj1 = firstBody.node as? SKSpriteNode,
+                let obj2 = secondBody.node as? SKSpriteNode {
+                cagesDestroyed += 1
+                rockDidCollideWithObject(rock: obj1, object: obj2)
+            }
+        }
+
+        if cagesDestroyed == 2 {
+            if ((firstBody.categoryBitMask == PhysicsCategory.rock) &&
+                (secondBody.categoryBitMask == PhysicsCategory.gold)) {
+                if let obj1 = firstBody.node as? SKSpriteNode,
+                    let obj2 = secondBody.node as? SKSpriteNode {
+                    background!.addChild(gameWonLabel)
+                    rockDidCollideWithObject(rock: obj1, object: obj2)
+                }
+            }
+        }
+
     }
 }
 
@@ -38,6 +60,7 @@ class GameScene: SKScene {
     weak var gameViewControllerDelegate:GameViewControllerDelegate?
     var gameStarted:Bool = false
     var hitGold:Bool = false
+    var cagesDestroyed:Int = 0
     
     var entities = [GKEntity]()
     var graphs = [String : GKGraph]()
@@ -54,7 +77,9 @@ class GameScene: SKScene {
     let cage2 = SKSpriteNode(imageNamed: "cage4")
     let lep = SKSpriteNode(imageNamed: "leprechaun")
     var background:SKSpriteNode?
-    
+    let gameWonLabel = SKLabelNode(fontNamed: "AvenirNextCondensed-HeavyItalic")
+    let gameLostLabel = SKLabelNode(fontNamed: "AvenirNextCondensed-HeavyItalic")
+
     var ground:UIView?
 
     struct PhysicsCategory {
@@ -63,7 +88,8 @@ class GameScene: SKScene {
         static let rock   : UInt32 = 0b1       // 1
         static let pillar: UInt32 = 0b10      // 2
         static let gold: UInt32 = 0b11      // 3
-        static let cage: UInt32 = 0b100      // 3
+        static let cage1: UInt32 = 0b100      // 4
+        static let cage2: UInt32 = 0b101      // 5
 
     }
     
@@ -84,7 +110,6 @@ class GameScene: SKScene {
             if add {
                 print("Drawing Rock")
                 background!.addChild(rock)
-                background!.addChild(gold)
             }
         }
     }
@@ -108,7 +133,7 @@ class GameScene: SKScene {
         rock.physicsBody?.isDynamic = true
         rock.physicsBody?.affectedByGravity = true
         rock.physicsBody?.categoryBitMask = PhysicsCategory.rock
-        rock.physicsBody?.contactTestBitMask = PhysicsCategory.gold
+        rock.physicsBody?.contactTestBitMask =  PhysicsCategory.gold
         rock.physicsBody?.collisionBitMask = PhysicsCategory.none
         rock.physicsBody?.usesPreciseCollisionDetection = true
 
@@ -135,36 +160,41 @@ class GameScene: SKScene {
         cage1.physicsBody = SKPhysicsBody(rectangleOf: cage1.size)
         cage1.physicsBody?.isDynamic = true
         cage1.physicsBody?.affectedByGravity = false
-        cage1.physicsBody?.categoryBitMask = PhysicsCategory.cage
+        cage1.physicsBody?.categoryBitMask = PhysicsCategory.cage1
         cage1.physicsBody?.contactTestBitMask = PhysicsCategory.rock
         cage1.physicsBody?.collisionBitMask = PhysicsCategory.none
         
         background!.addChild(cage1)
 
-        cage2.zPosition = 0.7
+        cage2.zPosition = 0.8
         cage2.position = CGPoint(x: -view.bounds.width/2+90, y: view.bounds.height/2-920)
         cage2.physicsBody = SKPhysicsBody(rectangleOf: cage2.size)
         cage2.physicsBody?.isDynamic = true
         cage2.physicsBody?.affectedByGravity = false
-        cage2.physicsBody?.categoryBitMask = PhysicsCategory.cage
+        cage2.physicsBody?.categoryBitMask = PhysicsCategory.cage2
         cage2.physicsBody?.contactTestBitMask = PhysicsCategory.rock
         cage2.physicsBody?.collisionBitMask = PhysicsCategory.none
         
         background!.addChild(cage2)
+        
+        gameWonLabel.zPosition = 0.9
+        gameWonLabel.text = "Congratulations! Leprechaun happy."
+        gameWonLabel.fontSize = 30
+        gameWonLabel.position = CGPoint(x:0,y:0)
+        gameWonLabel.fontColor = UIColor.black
+
+        gameLostLabel.zPosition = 0.9
+        gameLostLabel.text = "You Lose. Leprechaun angry."
+        gameLostLabel.fontSize = 30
+        gameLostLabel.position = CGPoint(x:0,y:0)
+        gameLostLabel.fontColor = UIColor.black
 
         physicsWorld.contactDelegate = self
-        
-//        let groundFrame = CGRect(x: 0, y: view.bounds.height-50, width: view.bounds.width, height: 50)
-//        ground = UIView(frame:groundFrame)
-//        ground?.backgroundColor = UIColor.brown
-//        view.addSubview(ground!)
-
     }
     
-    func rockDidCollideWithPillar(rock: SKSpriteNode, pillar: SKSpriteNode) {
-        print("Hit")
+    func rockDidCollideWithObject(rock: SKSpriteNode, object: SKSpriteNode) {
         rock.removeFromParent()
-        pillar.removeFromParent()
+        object.removeFromParent()
         gameViewControllerDelegate?.callMethod(control:"Stop", addRock:nil)
         hitGold = true
 
@@ -208,6 +238,7 @@ class GameScene: SKScene {
             return
         }
         
+        gameViewControllerDelegate?.removeRock()
         gameViewControllerDelegate?.callMethod(control:"Start", addRock:hitGold)
         hitGold = false
         for t in touches { self.touchDown(atPoint: t.location(in: self)) }

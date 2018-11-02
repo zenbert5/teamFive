@@ -89,6 +89,7 @@ class GameViewController: UIViewController, GameViewControllerDelegate {
                 }
             }
         } else if control == "Stop" {
+            
             stopListening()
         }
     }
@@ -98,10 +99,13 @@ class GameViewController: UIViewController, GameViewControllerDelegate {
             manager.stopDeviceMotionUpdates()
         }
     }
+    
+    func removeRock() {
+        self.rocks -= 1
+    }
 
     func startListening(node sceneNode:GameScene, addRock:Bool?) {
 
-        print("Rocks: ", self.rocks)
         if let view = self.view as! SKView? {
             sceneNode.initRock(to:view, addRock:addRock)
         }
@@ -131,13 +135,14 @@ class GameViewController: UIViewController, GameViewControllerDelegate {
                             // check if node is in scene
                             if (!sceneNode.intersects(sceneNode.rock)) {
 
-                                self.rocks -= 1
-
                                 // reinit game
                                 
                                 // need to show rock again
                                 if let view = self.view as! SKView? {
                                     DispatchQueue.main.async(){
+                                        if self.rocks == 1 {
+                                            sceneNode.addChild(sceneNode.gameLostLabel)
+                                        }
                                         self.gameStarted = false
                                         self.stopListening()
                                     }

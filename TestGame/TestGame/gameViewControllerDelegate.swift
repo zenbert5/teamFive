@@ -10,4 +10,5 @@ import SpriteKit
 
 protocol GameViewControllerDelegate: class {
     func callMethod(control:String, addRock:Bool?)
+    func removeRock()
 }
