@@ -57,7 +57,8 @@ class GameViewController: UIViewController {
                 if let manager = motionManager {
                     if manager.isDeviceMotionAvailable {
                         let motionQ = OperationQueue()
-                        manager.deviceMotionUpdateInterval = 0.5
+                        //let motionQ = DispatchQueue(label: "rockQueue", attributes: .concurrent)
+                        manager.deviceMotionUpdateInterval = 0.05
                         manager.startDeviceMotionUpdates(to: motionQ, withHandler: {
                             (data: CMDeviceMotion?, error: Error?) in
                             if let myData = data {
@@ -66,13 +67,13 @@ class GameViewController: UIViewController {
                                         if self.degreesFromRadians(last.pitch)! - self.degreesFromRadians(myData.attitude.pitch)! >= 30 {
                                             sceneNode.gameStarted = true
                                             self.gameStarted = true
-                                            print(self.degreesFromRadians(last.pitch), self.degreesFromRadians(myData.attitude.pitch))
+                                            print(self.degreesFromRadians(last.pitch) ?? 0.0, self.degreesFromRadians(myData.attitude.pitch) as Any)
                                         }
                                     }
                                 }
-                                let attitude = myData.attitude
+                                _ = myData.attitude
                                 if !self.gameStarted {
-//                                    print("attitude", attitude)
+                                    print("attitude", data?.attitude as Any)
 //                                    print("pitch", self.degreesFromRadians(attitude.pitch) ?? 0.0)
                                 } else {
                                     // check if node is in scene
@@ -95,17 +96,18 @@ class GameViewController: UIViewController {
                                         }
                                     }
                                     if let last = self.lastAttitude {
-//                                        print("roll -->", self.degreesFromRadians(last.roll)!)
-//                                        print("previous -->", self.degreesFromRadians(myData.attitude.roll)!)
-                                        if last.roll > 0 {
-                                            rollRate = 0.25
-                                        } else {
-                                            rollRate = -0.25
-                                        }
-                                        if let roll = rollRate {
+                                          print("roll -->", self.degreesFromRadians(last.roll)!)
+                                          print("previous -->", self.degreesFromRadians(myData.attitude.roll)!)
+                                        
+//                                        if last.roll > 0 {
+//                                            rollRate = last.roll/1.5
+//                                        } else {
+//                                            rollRate = last.roll/2
+//                                        }
+//                                        if let roll = rollRate {
 //                                            print("roll rate -->", roll)
-                                            sceneNode.physicsWorld.gravity = CGVector(dx: roll, dy: -0.2)
-                                        }
+                                            sceneNode.physicsWorld.gravity = CGVector(dx: last.roll, dy: -0.4)
+//                                        }
                                     }
                                    
                                 }
