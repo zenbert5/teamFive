@@ -59,6 +59,19 @@ class GameScene: SKScene {
     
     deinit {print("gamescene deinitied")}
     
+    func initRock() {
+        let view = SKView()
+        physicsWorld.gravity = CGVector(dx:0, dy: 0)
+        rock.position = CGPoint(x: -view.bounds.width/2+70, y: view.bounds.height/2+100)
+        rock.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
+        rock.physicsBody?.isDynamic = true
+        rock.physicsBody?.affectedByGravity = true
+        rock.physicsBody?.categoryBitMask = PhysicsCategory.rock
+        rock.physicsBody?.contactTestBitMask = PhysicsCategory.pillar
+        rock.physicsBody?.collisionBitMask = PhysicsCategory.none
+        rock.physicsBody?.usesPreciseCollisionDetection = true
+    }
+    
     override func didMove(to view: SKView) {
         physicsWorld.gravity = CGVector(dx:0, dy: 0)
 

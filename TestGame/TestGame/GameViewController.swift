@@ -84,7 +84,8 @@ class GameViewController: UIViewController {
                                             // reinit game
                                             rocks -= 1
 
-                                            // need to redraw the scene
+                                            // need to show rock again
+                                            sceneNode.initRock()
                                             self.gameStarted = false
                                             sceneNode.gameStarted = false
                                         }
