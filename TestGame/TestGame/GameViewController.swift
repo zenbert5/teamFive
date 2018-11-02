@@ -25,6 +25,9 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        var rollRate: Double?
+        var rocks: Int = 3
+        
         motionManager = CMMotionManager()
 //        let boundaries = UICollisionBehavior(items: [rock!, ground!])
 //        boundaries.translatesReferenceBoundsIntoBoundary = true
@@ -72,16 +75,33 @@ class GameViewController: UIViewController {
                                     print("attitude", attitude)
                                     print("pitch", self.degreesFromRadians(attitude.pitch) ?? 0.0)
                                 } else {
+                                    // check if node is in scene
+                                    if (!sceneNode.intersects(sceneNode.rock)) {
+                                        print("Elvis has left the building")
+                                        if rocks == 0 {
+                                            // gameover
+                                        } else {
+                                            // reinit game
+                                            rocks -= 1
+                                            
+                                        }
+                                    }
                                     if let last = self.lastAttitude {
                                         print("roll -->", self.degreesFromRadians(last.roll)!)
                                         print("previous -->", self.degreesFromRadians(myData.attitude.roll)!)
-                                        let rollRate = (self.degreesFromRadians(last.roll)! / self.degreesFromRadians(myData.attitude.roll)!) / 13
-                                        print("roll rate -->", rollRate)
-                                        sceneNode.physicsWorld.gravity = CGVector(dx: rollRate, dy: -0.1)
+                                        if last.roll > 0 {
+                                            rollRate = 0.25
+                                        } else {
+                                            rollRate = -0.25
+                                        }
+                                        if let roll = rollRate {
+                                            print("roll rate -->", roll)
+                                            sceneNode.physicsWorld.gravity = CGVector(dx: roll, dy: -0.2)
+                                        }
                                     }
                                    
                                 }
-                                 self.lastAttitude = myData.attitude
+                                self.lastAttitude = myData.attitude
                             }
                         })
                     }

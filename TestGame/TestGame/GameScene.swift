@@ -57,6 +57,8 @@ class GameScene: SKScene {
 //        static let ground: UInt32 = 0b100      // 3
     }
     
+    //deinit {print("gamescene deinitied")}
+    
     override func didMove(to view: SKView) {
         physicsWorld.gravity = CGVector(dx:0, dy: 0)
 
