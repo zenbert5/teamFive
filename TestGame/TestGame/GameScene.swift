@@ -47,6 +47,9 @@ class GameScene: SKScene {
     var animator:UIDynamicAnimator?
     let rock = SKSpriteNode(imageNamed: "rock")
     var pillar = SKSpriteNode(imageNamed: "pillar")
+    let gold = SKSpriteNode(imageNamed: "gold")
+    var background:SKSpriteNode?
+    
     var ground:UIView?
 
     struct PhysicsCategory {
@@ -54,7 +57,7 @@ class GameScene: SKScene {
         static let all       : UInt32 = UInt32.max
         static let rock   : UInt32 = 0b1       // 1
         static let pillar: UInt32 = 0b10      // 2
-//        static let ground: UInt32 = 0b100      // 3
+        static let gold: UInt32 = 0b100      // 3
     }
     
     deinit {print("gamescene deinitied")}
@@ -63,10 +66,19 @@ class GameScene: SKScene {
         rock.position = CGPoint(x: -view.bounds.width/2+450, y: view.bounds.height/2+70)
     }
     
+    func initBackground(to view: SKView) {
+        let txt = SKTexture(imageNamed: "background")
+        background = SKSpriteNode(texture: txt, size:size)
+        background!.position = CGPoint(x: self.frame.midX, y: self.frame.midY)
+        self.addChild(background!)
+    }
+    
     override func didMove(to view: SKView) {
         physicsWorld.gravity = CGVector(dx:0, dy: 0)
-
-        rock.position = CGPoint(x: -view.bounds.width/2+450, y: view.bounds.height/2+70)
+        
+	initBackground(to:view)
+        
+        rock.position = CGPoint(x: -view.bounds.width/2+70, y: view.bounds.height/2+70)
         rock.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
         rock.physicsBody?.isDynamic = true
         rock.physicsBody?.affectedByGravity = true
@@ -74,18 +86,30 @@ class GameScene: SKScene {
         rock.physicsBody?.contactTestBitMask = PhysicsCategory.pillar
         rock.physicsBody?.collisionBitMask = PhysicsCategory.none
         rock.physicsBody?.usesPreciseCollisionDetection = true
+
+        background!.addChild(rock)
         
-        addChild(rock)
+//        pillar.position = CGPoint(x: -view.bounds.width/2+40, y: -view.bounds.height/2)
+//        pillar.physicsBody = SKPhysicsBody(rectangleOf: pillar.size)
+//        pillar.physicsBody?.isDynamic = true
+//        pillar.physicsBody?.affectedByGravity = false
+//        pillar.physicsBody?.categoryBitMask = PhysicsCategory.pillar
+//        pillar.physicsBody?.contactTestBitMask = PhysicsCategory.rock
+//        pillar.physicsBody?.collisionBitMask = PhysicsCategory.none
+//
+//        background!.addChild(pillar)
+
+        gold.position = CGPoint(x: 0, y: 0)
+        gold.physicsBody = SKPhysicsBody(rectangleOf: gold.size)
+        gold.physicsBody?.isDynamic = true
+        gold.physicsBody?.affectedByGravity = false
+        gold.physicsBody?.categoryBitMask = PhysicsCategory.gold
+        gold.physicsBody?.contactTestBitMask = PhysicsCategory.rock
+        gold.physicsBody?.collisionBitMask = PhysicsCategory.none
         
-        pillar.position = CGPoint(x: -view.bounds.width/2+40, y: -view.bounds.height/2)
-        pillar.physicsBody = SKPhysicsBody(rectangleOf: pillar.size)
-        pillar.physicsBody?.isDynamic = true
-        pillar.physicsBody?.affectedByGravity = false
-        pillar.physicsBody?.categoryBitMask = PhysicsCategory.pillar
-        pillar.physicsBody?.contactTestBitMask = PhysicsCategory.rock
-        pillar.physicsBody?.collisionBitMask = PhysicsCategory.none
+        background!.addChild(gold)
+
         
-        addChild(pillar)
         
         physicsWorld.contactDelegate = self
         
