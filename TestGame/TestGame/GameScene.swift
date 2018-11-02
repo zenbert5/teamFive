@@ -9,6 +9,7 @@
 import SpriteKit
 import GameplayKit
 
+
 extension GameScene: SKPhysicsContactDelegate {
     func didBegin(_ contact: SKPhysicsContact) {
         // 1
@@ -34,6 +35,7 @@ extension GameScene: SKPhysicsContactDelegate {
 }
 
 class GameScene: SKScene {
+    var gameStarted:Bool = false
     
     var entities = [GKEntity]()
     var graphs = [String : GKGraph]()
@@ -56,9 +58,9 @@ class GameScene: SKScene {
     }
     
     override func didMove(to view: SKView) {
-        physicsWorld.gravity = CGVector(dx:0, dy: -0.3)
+        physicsWorld.gravity = CGVector(dx:0, dy: 0)
 
-        rock.position = CGPoint(x: -view.bounds.width/2+50, y: view.bounds.height/2+50)
+        rock.position = CGPoint(x: -view.bounds.width/2+70, y: view.bounds.height/2+50)
         rock.physicsBody = SKPhysicsBody(rectangleOf: rock.size)
         rock.physicsBody?.isDynamic = true
         rock.physicsBody?.affectedByGravity = true
@@ -69,7 +71,7 @@ class GameScene: SKScene {
         
         addChild(rock)
         
-        pillar.position = CGPoint(x: -view.bounds.width/2+50, y: -view.bounds.height/2)
+        pillar.position = CGPoint(x: -view.bounds.width/2+70, y: -view.bounds.height/2)
         pillar.physicsBody = SKPhysicsBody(rectangleOf: pillar.size)
         pillar.physicsBody?.isDynamic = true
         pillar.physicsBody?.affectedByGravity = false
@@ -99,17 +101,7 @@ class GameScene: SKScene {
         self.lastUpdateTime = 0
                 
         // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
         
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
     }
     
     
@@ -205,6 +197,9 @@ class GameScene: SKScene {
             entity.update(deltaTime: dt)
         }
         
+        if gameStarted {
+            //physicsWorld.gravity = CGVector(dx:0, dy: -0.3)
+        }
         self.lastUpdateTime = currentTime
     }
 }

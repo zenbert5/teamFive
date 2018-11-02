@@ -10,18 +10,25 @@ import UIKit
 import SpriteKit
 import GameplayKit
 import CoreGraphics
+import CoreMotion
 
 class GameViewController: UIViewController {
+    
+    var gameStarted = false
+    var lastAttitude:CMAttitude?
+    var motionManager: CMMotionManager?
+    
+    func degreesFromRadians(_ radiant: Double) -> Double? {
+        return radiant * 180/Double.pi
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        
+        motionManager = CMMotionManager()
 //        let boundaries = UICollisionBehavior(items: [rock!, ground!])
 //        boundaries.translatesReferenceBoundsIntoBoundary = true
         
-
 //        animator?.addBehavior(boundaries)
 
         // Load 'GameScene.sks' as a GKScene. This provides gameplay related content
@@ -43,6 +50,47 @@ class GameViewController: UIViewController {
                     view.presentScene(sceneNode)
                     view.ignoresSiblingOrder = true
                 }
+                
+                if let manager = motionManager {
+                    if manager.isDeviceMotionAvailable {
+                        let motionQ = OperationQueue()
+                        manager.deviceMotionUpdateInterval = 0.5
+                        manager.startDeviceMotionUpdates(to: motionQ, withHandler: {
+                            (data: CMDeviceMotion?, error: Error?) in
+                            if let myData = data {
+                                if !sceneNode.gameStarted {
+                                    if let last = self.lastAttitude {
+                                        if self.degreesFromRadians(last.pitch)! - self.degreesFromRadians(myData.attitude.pitch)! >= 30 {
+                                            sceneNode.gameStarted = true
+                                            self.gameStarted = true
+                                            print(self.degreesFromRadians(last.pitch), self.degreesFromRadians(myData.attitude.pitch))
+                                        }
+                                    }
+                                }
+                                let attitude = myData.attitude
+                                if !self.gameStarted {
+                                    print("attitude", attitude)
+                                    print("pitch", self.degreesFromRadians(attitude.pitch) ?? 0.0)
+                                } else {
+                                    if let last = self.lastAttitude {
+                                        print("roll -->", self.degreesFromRadians(last.roll)!)
+                                        print("previous -->", self.degreesFromRadians(myData.attitude.roll)!)
+                                        let rollRate = (self.degreesFromRadians(last.roll)! / self.degreesFromRadians(myData.attitude.roll)!) / 13
+                                        print("roll rate -->", rollRate)
+                                        sceneNode.physicsWorld.gravity = CGVector(dx: rollRate, dy: -0.1)
+                                    }
+                                   
+                                }
+                                 self.lastAttitude = myData.attitude
+                            }
+                        })
+                    }
+                    else {
+                        // alert user the capability is missing
+                        print("no device motion capability")
+                    }
+                }
+
             }
         }
     }
